@@ -1,0 +1,283 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Harborlight design tokens.
+ *
+ * Values are sampled from the Light and Dark reference compositions. Layout is
+ * identical between themes: only the token values change.
+ */
+:root {
+  --hl-bg-app: #faf9f9;
+  --hl-bg-canvas: #fdfdfd;
+  --hl-surface: #ffffff;
+  --hl-surface-2: #fafafa;
+  --hl-surface-3: #f4f3f2;
+  --hl-sidebar: #ffffff;
+  --hl-border: #ecebe9;
+  --hl-border-strong: #dedbd7;
+  --hl-text: #1a1a19;
+  --hl-text-secondary: #5f5c58;
+  --hl-text-muted: #96928d;
+  --hl-nav-active-bg: #f0eafe;
+  --hl-nav-active-fg: #6d3ee8;
+  --hl-brand: #f04e23;
+  --hl-brand-hover: #d8431b;
+  --hl-brand-soft: #fdece6;
+  --hl-brand-fg: #ffffff;
+  --hl-accent: #7c5cff;
+  --hl-accent-soft: #efeafd;
+  --hl-teal: #22b8c6;
+  --hl-teal-soft: #e2f7f9;
+  --hl-success: #16a34a;
+  --hl-success-fg: #0f7a3d;
+  --hl-success-soft: #e8f7ee;
+  --hl-success-border: #bfe6cd;
+  --hl-warning: #e39a2b;
+  --hl-warning-fg: #9a640f;
+  --hl-warning-soft: #fdf3e0;
+  --hl-warning-border: #f2ddb2;
+  --hl-danger: #e24c3b;
+  --hl-danger-fg: #b3271a;
+  --hl-danger-soft: #fdece9;
+  --hl-danger-border: #f6cdc6;
+  --hl-info: #3b82f6;
+  --hl-chart-grid: #f0efed;
+  --hl-shadow-card: 0 1px 2px rgb(20 18 16 / 0.04), 0 1px 3px rgb(20 18 16 / 0.03);
+  --hl-shadow-pop: 0 12px 32px -8px rgb(20 18 16 / 0.16), 0 2px 8px rgb(20 18 16 / 0.06);
+  --hl-focus: #f04e23;
+}
+
+.dark {
+  --hl-bg-app: #120e19;
+  --hl-bg-canvas: #15161e;
+  --hl-surface: #1b1d25;
+  --hl-surface-2: #20222c;
+  --hl-surface-3: #262836;
+  --hl-sidebar: #171821;
+  --hl-border: #282a36;
+  --hl-border-strong: #363949;
+  --hl-text: #ececef;
+  --hl-text-secondary: #a2a2ae;
+  --hl-text-muted: #71727f;
+  --hl-nav-active-bg: #2d2041;
+  --hl-nav-active-fg: #b79bff;
+  --hl-brand: #ef5a28;
+  --hl-brand-hover: #f56b3c;
+  --hl-brand-soft: #38201a;
+  --hl-brand-fg: #ffffff;
+  --hl-accent: #9b7bff;
+  --hl-accent-soft: #2a2140;
+  --hl-teal: #38c2d0;
+  --hl-teal-soft: #16323a;
+  --hl-success: #37c06b;
+  --hl-success-fg: #6ee0a0;
+  --hl-success-soft: #16301f;
+  --hl-success-border: #235436;
+  --hl-warning: #e5a63c;
+  --hl-warning-fg: #f0c479;
+  --hl-warning-soft: #33260f;
+  --hl-warning-border: #5a4520;
+  --hl-danger: #ef5a4a;
+  --hl-danger-fg: #ff8d80;
+  --hl-danger-soft: #35191a;
+  --hl-danger-border: #5c2a28;
+  --hl-info: #6ea8fe;
+  --hl-chart-grid: #23252f;
+  --hl-shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 1px 3px rgb(0 0 0 / 0.24);
+  --hl-shadow-pop: 0 16px 40px -12px rgb(0 0 0 / 0.6), 0 2px 10px rgb(0 0 0 / 0.4);
+  --hl-focus: #f57a52;
+}
+
+@theme inline {
+  --color-app: var(--hl-bg-app);
+  --color-canvas: var(--hl-bg-canvas);
+  --color-surface: var(--hl-surface);
+  --color-surface-2: var(--hl-surface-2);
+  --color-surface-3: var(--hl-surface-3);
+  --color-sidebar: var(--hl-sidebar);
+  --color-line: var(--hl-border);
+  --color-line-strong: var(--hl-border-strong);
+  --color-ink: var(--hl-text);
+  --color-ink-secondary: var(--hl-text-secondary);
+  --color-ink-muted: var(--hl-text-muted);
+  --color-nav-active: var(--hl-nav-active-bg);
+  --color-nav-active-fg: var(--hl-nav-active-fg);
+  --color-brand: var(--hl-brand);
+  --color-brand-hover: var(--hl-brand-hover);
+  --color-brand-soft: var(--hl-brand-soft);
+  --color-brand-fg: var(--hl-brand-fg);
+  --color-accent: var(--hl-accent);
+  --color-accent-soft: var(--hl-accent-soft);
+  --color-teal: var(--hl-teal);
+  --color-teal-soft: var(--hl-teal-soft);
+  --color-success: var(--hl-success);
+  --color-success-fg: var(--hl-success-fg);
+  --color-success-soft: var(--hl-success-soft);
+  --color-success-line: var(--hl-success-border);
+  --color-warning: var(--hl-warning);
+  --color-warning-fg: var(--hl-warning-fg);
+  --color-warning-soft: var(--hl-warning-soft);
+  --color-warning-line: var(--hl-warning-border);
+  --color-danger: var(--hl-danger);
+  --color-danger-fg: var(--hl-danger-fg);
+  --color-danger-soft: var(--hl-danger-soft);
+  --color-danger-line: var(--hl-danger-border);
+  --color-info: var(--hl-info);
+  --color-chart-grid: var(--hl-chart-grid);
+
+  --shadow-card: var(--hl-shadow-card);
+  --shadow-pop: var(--hl-shadow-pop);
+
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+
+  --font-sans:
+    'Ubuntu', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-mono: 'Ubuntu Mono', 'JetBrains Mono', 'Fira Code', 'DejaVu Sans Mono', monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--hl-border);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--hl-bg-app);
+    color: var(--hl-text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;
+  }
+
+  /* Desktop app: text selection is opt-in, like a native client. */
+  body,
+  button,
+  [role='button'] {
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable],
+  .selectable {
+    user-select: text;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--hl-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--hl-text-muted) 35%, transparent);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--hl-text-muted) 55%, transparent);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  .hl-card {
+    background-color: var(--hl-surface);
+    border: 1px solid var(--hl-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--hl-shadow-card);
+  }
+
+  .hl-row-hover:hover {
+    background-color: color-mix(in srgb, var(--hl-text) 3%, transparent);
+  }
+
+  .hl-scroll {
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+}
+
+/* xterm.js -------------------------------------------------------------- */
+.xterm .xterm-viewport {
+  background-color: transparent !important;
+}
+
+.xterm-viewport::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--hl-text-muted) 40%, transparent);
+}
+
+/* CodeMirror ------------------------------------------------------------ */
+.cm-editor {
+  height: 100%;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+
+.cm-editor.cm-focused {
+  outline: none !important;
+}
+
+.cm-gutters {
+  background-color: var(--hl-surface) !important;
+  border-right: 1px solid var(--hl-border) !important;
+  color: var(--hl-text-muted) !important;
+}
+
+.cm-activeLine {
+  background-color: color-mix(in srgb, var(--hl-accent) 7%, transparent) !important;
+}
+
+.cm-activeLineGutter {
+  background-color: color-mix(in srgb, var(--hl-accent) 10%, transparent) !important;
+}
+
+/* React Flow ------------------------------------------------------------ */
+.react-flow__attribution {
+  display: none;
+}
+
+.react-flow__edge-path {
+  stroke: var(--hl-text-muted);
+  stroke-width: 1.5;
+}
+
+.react-flow__handle {
+  background: var(--hl-text-muted);
+  border: none;
+  width: 6px;
+  height: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,87 @@
+appId: dev.harborlight.app
+productName: Harborlight
+copyright: Copyright © 2026 Harborlight Contributors
+
+directories:
+  output: dist
+  buildResources: build
+
+# Only the compiled output ships. Sources, tests and tooling stay out of the
+# package so the installed size stays close to Electron itself.
+files:
+  - out/**/*
+  - resources/icons/**/*
+  - package.json
+  - '!**/*.map'
+  - '!**/{.DS_Store,.git,.github,.vscode}'
+
+asar: true
+asarUnpack:
+  - resources/icons/**
+
+npmRebuild: false
+buildDependenciesFromSource: false
+
+electronDownload:
+  cache: .cache/electron
+
+linux:
+  target:
+    - target: deb
+      arch: [x64, arm64]
+    - target: AppImage
+      arch: [x64, arm64]
+  category: Development;System;
+  synopsis: Container workflows, reimagined for Ubuntu
+  # electron-builder uses this as both the Debian long description and the
+  # desktop entry Comment, so it stays to one readable sentence.
+  description: Manage Docker containers, Compose projects, images, volumes and networks from the Ubuntu desktop.
+  maintainer: Harborlight Contributors <harborlight@users.noreply.github.com>
+  vendor: Harborlight Contributors
+  icon: resources/icons
+  executableName: harborlight
+  # Keeps the installed .desktop filename, StartupWMClass and Electron's app_id
+  # in sync so GNOME/Wayland matches the window to its launcher icon.
+  syncDesktopName: true
+  desktop:
+    entry:
+      Name: Harborlight
+      GenericName: Container Manager
+      Keywords: docker;container;compose;devops;
+      StartupNotify: 'true'
+      Terminal: 'false'
+
+deb:
+  # Electron's runtime dependencies on a minimal Ubuntu install. Docker itself
+  # is intentionally a recommendation: Harborlight can talk to a remote or
+  # rootless socket, and the installer offers to set it up.
+  depends:
+    - libgtk-3-0
+    - libnotify4
+    - libnss3
+    - libxss1
+    - libxtst6
+    - xdg-utils
+    - libatspi2.0-0
+    - libsecret-1-0
+    - libuuid1
+  recommends:
+    - docker.io
+  # Debian's own section vocabulary; the desktop Categories live in linux.category.
+  packageCategory: devel
+  priority: optional
+  compression: xz
+  afterInstall: build/deb/postinst
+  afterRemove: build/deb/postrm
+
+appImage:
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  license: build/license.txt
+
+artifactName: ${name}_${version}_${arch}.${ext}
+
+publish:
+  provider: github
+  owner: fmussad
+  repo: Harborlight
+  releaseType: release

@@ -1,0 +1,27 @@
+#!/bin/sh
+# Harborlight post-installation.
+#
+# Electron needs a setuid sandbox helper unless the kernel allows unprivileged
+# user namespaces. Ubuntu restricts them by default, so the helper is given the
+# permissions Chromium expects instead of disabling the sandbox.
+#
+# Note: electron-builder expands ${...} in this file as a build macro, so shell
+# variables here are written without braces.
+set -e
+
+SANDBOX=/opt/Harborlight/chrome-sandbox
+
+if [ -f "$SANDBOX" ]; then
+  chown root:root "$SANDBOX" || true
+  chmod 4755 "$SANDBOX" || true
+fi
+
+# Refresh the desktop database so the launcher appears without a re-login.
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database -q /usr/share/applications || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+  gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor || true
+fi
+
+exit 0

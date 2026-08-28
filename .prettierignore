@@ -1,0 +1,11 @@
+node_modules
+out
+dist
+release
+coverage
+.run
+package-lock.json
+playwright-report
+test-results
+resources/icons
+*.png
