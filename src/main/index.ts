@@ -5,6 +5,7 @@ import { collectPlatformInfo } from './services/osRelease'
 import { EngineManager } from './services/engineManager'
 import { events } from './services/events'
 import { logger } from './services/logger'
+import { hasAcceptedLicense, recordLicenseAcceptance } from './services/license'
 import { SecretStore } from './services/secrets'
 import { SettingsStore } from './services/settings'
 import { checkForUpdates } from './services/updates'
@@ -12,7 +13,9 @@ import { handlers } from './ipc/handlers'
 import { disposeIpcGateway, registerIpcGateway } from './ipc/registry'
 import { streams } from './streams'
 import { createTray, destroyTray, refreshTray } from './tray/tray'
+import { requestLicenseAcceptance } from './windows/licenseWindow'
 import { applySecurityPolicies, createMainWindow } from './windows/mainWindow'
+import { createSplashWindow } from './windows/splashWindow'
 
 const argv = process.argv.slice(1)
 const hasFlag = (flag: string): boolean => argv.includes(flag)
@@ -53,6 +56,10 @@ function bootstrap(): void {
   void app.whenReady().then(onReady)
 
   app.on('window-all-closed', () => {
+    // Before the main window exists the only window may be the licence gate.
+    // Dismissing it is not the user closing the app, and the gate decides for
+    // itself whether to carry on or quit.
+    if (!mainWindow) return
     // The tray keeps Harborlight alive; without one, closing quits.
     if (!context?.settings.get().closeToTray) app.quit()
   })
@@ -76,8 +83,15 @@ async function onReady(): Promise<void> {
 
   if (!guardRoot()) return
   if (!(await guardPlatform())) return
+  if (!(await guardLicense(userDataPath))) return
 
   const settings = new SettingsStore(userDataPath)
+
+  // Every ordinary start gets a splash. An autostart or `--hidden` launch does
+  // not, because there is no window coming for it to hand over to.
+  const opensHidden = startHidden || settings.get().startMinimized
+  const splash = opensHidden ? null : createSplashWindow(isDev)
+
   const secrets = new SecretStore(userDataPath)
   const engines = new EngineManager(settings.get(), userDataPath)
 
@@ -108,17 +122,29 @@ async function onReady(): Promise<void> {
 
   mainWindow = createMainWindow({
     isDev,
-    startHidden: startHidden || settings.get().startMinimized,
+    // While a splash is up it owns the screen: the main window stays hidden and
+    // is revealed only once the splash has stepped aside, so the two never
+    // overlap.
+    startHidden: opensHidden || splash !== null,
     onCloseRequested: () => !quitting && context!.settings.get().closeToTray
   })
 
+  if (splash) {
+    mainWindow.once('ready-to-show', () => {
+      splash.setStage('ready')
+      void splash.finish().then(showWindow)
+    })
+  }
+
   createTray(context, trayCallbacks)
 
+  splash?.setStage('connecting')
   await engines.refreshStatus().catch((error) => {
     logger.warn('engine', 'Initial status check failed', error)
   })
   engines.startPolling()
   refreshTray(context, trayCallbacks)
+  splash?.setStage('interface')
 
   logger.info('app', `Ready. Engine socket: ${engines.current().socketPath}`)
 }
@@ -186,6 +212,27 @@ function guardRoot(): boolean {
       'To override for a controlled environment, start with --allow-root.'
   )
   app.exit(1)
+  return false
+}
+
+/**
+ * Shows the MIT licence the first time Harborlight runs on this machine.
+ *
+ * Runs before the settings store, the engine and the tray exist: nothing
+ * should touch the Docker socket on behalf of someone who has not agreed to
+ * the terms yet.
+ */
+async function guardLicense(userDataPath: string): Promise<boolean> {
+  if (hasAcceptedLicense(userDataPath)) return true
+
+  if (await requestLicenseAcceptance(isDev)) {
+    recordLicenseAcceptance(userDataPath, APP_VERSION)
+    return true
+  }
+
+  logger.info('app', 'Quitting because the licence was declined')
+  quitting = true
+  app.quit()
   return false
 }
 

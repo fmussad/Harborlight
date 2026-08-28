@@ -59,7 +59,12 @@ export default defineConfig({
     build: {
       sourcemap: true,
       rollupOptions: {
-        input: { index: resolve(__dirname, 'src/preload/index.ts') },
+        input: {
+          index: resolve(__dirname, 'src/preload/index.ts'),
+          // The licence gate and splash run before the app and get a bridge of
+          // their own, far narrower than the one the renderer receives.
+          boot: resolve(__dirname, 'src/preload/boot.ts')
+        },
         output: { format: 'cjs', entryFileNames: '[name].cjs' }
       }
     }
@@ -73,8 +78,16 @@ export default defineConfig({
     },
     build: {
       sourcemap: true,
+      // The splash has to paint on the first frame, so its artwork is inlined
+      // as a data URL rather than fetched. That also keeps it inside the
+      // existing `img-src 'self' data:` policy with no CSP change.
+      assetsInlineLimit: (filePath: string) => (filePath.endsWith('splash.jpg') ? true : undefined),
       rollupOptions: {
-        input: { index: resolve(__dirname, 'src/renderer/index.html') }
+        input: {
+          index: resolve(__dirname, 'src/renderer/index.html'),
+          splash: resolve(__dirname, 'src/renderer/splash.html'),
+          license: resolve(__dirname, 'src/renderer/license.html')
+        }
       }
     }
   }

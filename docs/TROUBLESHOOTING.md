@@ -17,6 +17,7 @@ of its warnings.
 - [Docker Engine unavailable](#docker-engine-unavailable)
 - [Rootless Docker is not detected](#rootless-docker-is-not-detected)
 - [The app does not start on Wayland](#the-app-does-not-start-on-wayland)
+- [No dock icon right after installing the .deb](#no-dock-icon-right-after-installing-the-deb)
 - [Tray icon missing on GNOME](#tray-icon-missing-on-gnome)
 - [Tray icon is hard to see](#tray-icon-is-hard-to-see)
 - [Electron sandbox problems](#electron-sandbox-problems)
@@ -148,6 +149,42 @@ harborlight                  # run from a terminal to see the errors
 To make a workaround permanent, edit the `Exec=` line in a copy of the desktop entry placed at
 `~/.local/share/applications/harborlight.desktop`; that overrides the system one and survives
 upgrades.
+
+## No dock icon right after installing the .deb
+
+**Symptom.** The freshly installed application opens and the tray icon is there, but its dock entry
+is blank — no Harborlight mark, sometimes no entry at all. Running `harborlight` from a terminal, or
+the AppImage, shows the icon normally.
+
+**Cause.** Not the package. GNOME Shell matches a window to a `.desktop` file through
+`StartupWMClass` and then draws that file's `Icon=`. Both are correct in the installed entry, but the
+shell reads the desktop database and the hicolor icon cache when it starts and refreshes them
+asynchronously afterwards. Launch the app in the window between `dpkg` writing the files and the
+shell noticing them and there is nothing to match against. Electron makes the failure total rather
+than partial: it publishes an empty `_NET_WM_ICON`, so the shell has no icon of its own to fall back
+on and you get a blank entry instead of a generic one.
+
+**Fix.** Give the shell the files, or give it a nudge:
+
+```bash
+# what the package already runs; harmless to repeat
+sudo update-desktop-database -q /usr/share/applications
+sudo gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor
+
+# then restart the shell: Alt+F2, type r, Enter  (X11)
+# on Wayland, log out and back in
+```
+
+It also resolves itself: once the shell has picked up the entry, the icon is correct on every
+subsequent launch and survives reinstalls. If it persists after a shell restart, check that the entry
+and the window agree:
+
+```bash
+grep -E 'Icon|StartupWMClass' /usr/share/applications/harborlight.desktop
+xprop WM_CLASS   # then click the Harborlight window
+```
+
+Both should say `harborlight`.
 
 ## Tray icon missing on GNOME
 
