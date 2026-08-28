@@ -13,6 +13,7 @@ import { useUiStore } from '@/stores/ui'
 /** The shipped defaults, so a test only states what it actually changes. */
 export const TEST_SETTINGS: Settings = {
   theme: 'system',
+  trayIcon: 'auto',
   dockerSocket: '/var/run/docker.sock',
   useCustomSocket: false,
   engineMode: 'docker',

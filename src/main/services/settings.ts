@@ -10,6 +10,7 @@ export function defaultSettings(): Settings {
   const socket = pickDefaultSocket()
   return {
     theme: 'system',
+    trayIcon: 'auto',
     dockerSocket: socket?.path ?? DEFAULT_SOCKET,
     useCustomSocket: false,
     engineMode: process.env.HARBORLIGHT_ENGINE === 'mock' ? 'mock' : 'docker',

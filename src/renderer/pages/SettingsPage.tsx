@@ -169,6 +169,22 @@ export function SettingsPage(): ReactElement {
               />
             }
           />
+          <Row
+            label="Tray icon"
+            hint="Automatic assumes the dark panel Ubuntu keeps under both themes. Override it if the glyph is hard to see on yours."
+            control={
+              <SegmentedControl
+                ariaLabel="Tray icon"
+                value={settings.trayIcon}
+                onChange={(trayIcon) => void update({ trayIcon })}
+                options={[
+                  { value: 'auto', label: 'Auto' },
+                  { value: 'light', label: 'Pale', title: 'Pale glyph, for dark panels' },
+                  { value: 'dark', label: 'Dark', title: 'Dark glyph, for light panels' }
+                ]}
+              />
+            }
+          />
         </Section>
 
         <Section

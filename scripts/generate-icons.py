@@ -23,9 +23,11 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "resources" / "icons"
 SIZES = (16, 24, 32, 48, 64, 128, 256, 512, 1024)
 
-# Supersampling factor: draw large, then downscale for antialiasing.
-SCALE = 8
 BASE = 32
+# The master is drawn above the largest output so every icon is downsampled.
+# Upscaling here is what makes a dock icon look soft at 512 and 1024.
+MASTER = max(SIZES) * 2
+TRAY_MASTER = 256
 
 GRADIENT_START = (255, 138, 61)
 GRADIENT_MID = (240, 78, 35)
@@ -38,19 +40,25 @@ def lerp(a: tuple[int, int, int], b: tuple[int, int, int], t: float) -> tuple[in
 
 
 def diagonal_gradient(size: int) -> Image.Image:
-    """Top-left to bottom-right gradient matching the SVG linearGradient."""
-    image = Image.new("RGB", (size, size))
+    """Top-left to bottom-right gradient matching the SVG linearGradient.
+
+    Rendered small and then scaled up: the ramp is smooth, so this is
+    indistinguishable from a per-pixel render of the full size and keeps the
+    Python loop off the master canvas.
+    """
+    steps = min(size, 512)
+    image = Image.new("RGB", (steps, steps))
     pixels = image.load()
     assert pixels is not None
-    for y in range(size):
-        for x in range(size):
-            t = (x + y) / (2 * (size - 1))
+    for y in range(steps):
+        for x in range(steps):
+            t = (x + y) / (2 * (steps - 1))
             if t <= 0.55:
                 colour = lerp(GRADIENT_START, GRADIENT_MID, t / 0.55)
             else:
                 colour = lerp(GRADIENT_MID, GRADIENT_END, (t - 0.55) / 0.45)
             pixels[x, y] = colour
-    return image
+    return image if steps == size else image.resize((size, size), Image.BICUBIC)
 
 
 def draw_mark(size: int) -> Image.Image:
@@ -144,7 +152,10 @@ def draw_tray_glyph(size: int, colour: tuple[int, int, int]) -> Image.Image:
 
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    master = draw_mark(BASE * SCALE)
+    if MASTER < max(SIZES):
+        sys.exit(f"master canvas {MASTER}px is smaller than the largest icon {max(SIZES)}px")
+
+    master = draw_mark(MASTER)
 
     for size in SIZES:
         icon = master.resize((size, size), Image.LANCZOS)
@@ -156,7 +167,7 @@ def main() -> None:
 
     # `tray-dark.png` is the dark glyph shown on light panels, and vice versa.
     for name, colour in (("tray-dark", (32, 30, 29)), ("tray-light", (245, 243, 242))):
-        glyph = draw_tray_glyph(BASE * SCALE, colour)
+        glyph = draw_tray_glyph(TRAY_MASTER, colour)
         glyph.resize((22, 22), Image.LANCZOS).save(OUT_DIR / f"{name}.png")
         glyph.resize((44, 44), Image.LANCZOS).save(OUT_DIR / f"{name}@2x.png")
         print(f"wrote {name}.png and {name}@2x.png")

@@ -28,7 +28,7 @@ you asked for.
 | **Cleanup**            | A planner that lists exactly what will be removed and how much space it frees, with a dry run and a typed confirmation for anything that loses data.                |
 | **Volumes & Networks** | Listing, filtering, inspection and guarded removal, including in-use detection.                                                                                     |
 | **Registry**           | Add registries, log in and out, credentials stored through the OS keyring (Electron `safeStorage`).                                                                 |
-| **Settings**           | Theme, Docker socket, polling interval, log defaults, terminal shell, tray/autostart behaviour, update channel, destructive-action confirmations.                   |
+| **Settings**           | Theme, tray glyph, Docker socket, polling interval, log defaults, terminal shell, tray/autostart behaviour, update channel, destructive-action confirmations.       |
 
 Everything above operates on real Docker resources. Nothing in the UI reports success without having
 performed the operation.

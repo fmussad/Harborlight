@@ -100,10 +100,28 @@ test.describe('Settings', () => {
       .click()
     await expect(ui.getByRole('heading', { name: 'Settings' })).toBeVisible()
 
-    await ui.getByRole('radio', { name: 'Dark' }).click()
+    await ui.getByRole('radiogroup', { name: 'Theme' }).getByRole('radio', { name: 'Dark' }).click()
     await expect(ui.locator('html')).toHaveClass(/dark/)
 
     const stored = await ui.evaluate(() => window.harborlight!.invoke('settings.get'))
     expect(stored.ok && stored.data.theme).toBe('dark')
+  })
+
+  test('keeps the tray glyph preference across a restart', async ({ ui }) => {
+    await ui
+      .getByRole('navigation', { name: 'Main' })
+      .getByRole('button', { name: 'Settings', exact: true })
+      .click()
+
+    const trayIcon = ui.getByRole('radiogroup', { name: 'Tray icon' })
+    await expect(trayIcon.getByRole('radio', { name: 'Auto' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    )
+
+    await trayIcon.getByRole('radio', { name: 'Dark' }).click()
+
+    const stored = await ui.evaluate(() => window.harborlight!.invoke('settings.get'))
+    expect(stored.ok && stored.data.trayIcon).toBe('dark')
   })
 })
