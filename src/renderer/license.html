@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'self'; form-action 'none'; frame-ancestors 'none'"
+    />
+    <title>Harborlight licence</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --surface: #faf9f9;
+        --raised: #ffffff;
+        --border: #e4e0dd;
+        --text: #1f1b19;
+        --muted: #6d635d;
+        --accent: #f04e23;
+        --accent-text: #ffffff;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --surface: #1a1512;
+          --raised: #221c19;
+          --border: #362e29;
+          --text: #f5f3f2;
+          --muted: #a89e98;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        color: var(--text);
+        font-family: Ubuntu, 'Noto Sans', system-ui, sans-serif;
+        font-size: 14px;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      header {
+        padding: 1.75rem 2rem 1rem;
+      }
+
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .lede {
+        margin: 0;
+        max-width: 46ch;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .scroll {
+        flex: 1;
+        margin: 0 2rem;
+        padding: 1.25rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--raised);
+        overflow-y: auto;
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        font-family: 'Ubuntu Mono', ui-monospace, monospace;
+        font-size: 12.5px;
+        line-height: 1.65;
+        -webkit-user-select: text;
+        user-select: text;
+      }
+
+      footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 1.25rem 2rem 1.5rem;
+      }
+
+      button {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--raised);
+        color: var(--text);
+        font: inherit;
+        font-weight: 500;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--muted);
+      }
+
+      button.primary {
+        border-color: transparent;
+        background: var(--accent);
+        color: var(--accent-text);
+      }
+
+      button.primary:hover {
+        filter: brightness(1.08);
+      }
+
+      button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Before you start</h1>
+      <p class="lede">
+        Harborlight is free and open source software, released under the MIT licence. Accept the
+        terms below to continue.
+      </p>
+    </header>
+
+    <div class="scroll" tabindex="0" role="region" aria-label="MIT licence">
+      <pre id="text"></pre>
+    </div>
+
+    <footer>
+      <button id="decline" type="button">Decline and quit</button>
+      <button id="accept" type="button" class="primary">Accept and continue</button>
+    </footer>
+
+    <script type="module" src="/license.ts"></script>
+  </body>
+</html>

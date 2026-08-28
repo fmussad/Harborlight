@@ -60,6 +60,25 @@ flowchart LR
 | Preload  | `src/preload/index.ts`  | `contextBridge`, `ipcRenderer` on two channels                  | Node modules beyond what it re-exports, business logic |
 | Renderer | `src/renderer/main.tsx` | DOM, React, `window.harborlight`                                | Node.js, `require`, `fs`, Dockerode, `child_process`   |
 
+## The boot windows
+
+Two windows run before the application does, and neither is part of the renderer above.
+
+| Window  | Page                        | Bridge                | Can do                                  |
+| ------- | --------------------------- | --------------------- | --------------------------------------- |
+| Licence | `src/renderer/license.html` | `src/preload/boot.ts` | Answer accepted or declined, once       |
+| Splash  | `src/renderer/splash.html`  | `src/preload/boot.ts` | Receive the startup stage; send nothing |
+
+They are separate Vite entry points rather than routes, so they paint without loading React, and
+they use a bridge of their own instead of the command gateway: a licence screen has no business
+being able to reach Docker. The splash artwork is inlined as a data URL at build time, which keeps
+it inside the existing `img-src 'self' data:` policy and off the critical path.
+
+Their preload and the renderer's preload must not import a module in common. A sandboxed preload
+gets a `require` that resolves Electron and Node builtins only, so anything the bundler hoists into
+a shared chunk fails to load and leaves the window with no bridge at all. This is why the boot
+channels live in `contracts/boot.ts` rather than alongside the others in `contracts/channels.ts`.
+
 `src/shared/` is the only code imported by more than one process. It holds Zod schemas, the command
 contract, formatting helpers and the Compose YAML parser — all of it pure and free of Node.js and
 DOM dependencies.
@@ -308,8 +327,8 @@ flowchart LR
         S["src/shared"]
     end
     M & S --> EM["electron-vite → out/main (CJS)"]
-    P --> EP["electron-vite → out/preload/index.cjs"]
-    R & S --> ER["Vite + React → out/renderer (file://)"]
+    P --> EP["electron-vite → out/preload/{index,boot}.cjs"]
+    R & S --> ER["Vite + React → out/renderer (file://)\nindex.html, splash.html, license.html"]
     EM & EP & ER --> B["electron-builder"]
     B --> DEB[".deb — amd64, arm64"]
     B --> AI["AppImage — x86_64, arm64"]
@@ -339,10 +358,15 @@ src/
                           log framing, socket discovery, command tokenizer
     compose/              discovery, argument building, path safety, runner
     services/             settings, secrets, engine manager, tasks, events, logger,
-                          autostart, cleanup, updates, trivy, os-release
-    tray/  windows/       tray menu, BrowserWindow creation and hardening
-  preload/index.ts        contextBridge surface (invoke, on, off)
+                          autostart, cleanup, licence, updates, trivy, os-release
+    tray/  windows/       tray menu, BrowserWindow creation and hardening,
+                          licence gate and splash
+  preload/
+    index.ts              contextBridge surface (invoke, on, off)
+    boot.ts               the licence and splash bridge: one listener, one answer
   renderer/
+    splash.html/.ts       startup splash, plain DOM so it paints immediately
+    license.html/.ts      first-run MIT agreement
     pages/                Overview, Containers, Compose, Images, Volumes, Networks,
                           Registry, Settings
     components/           layout, ui primitives, containers, images, compose

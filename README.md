@@ -89,6 +89,19 @@ No Docker Engine available? Run the whole app against an in-memory mock:
 make dev MOCK=1
 ```
 
+## First launch
+
+The very first time Harborlight runs it shows the MIT licence and waits for you to accept it.
+Declining quits without touching Docker or writing a profile. The answer is stored in
+`~/.config/Harborlight/license-acceptance.json`, separately from your settings, so resetting
+settings to defaults does not ask again.
+
+After that, every launch opens a splash screen that reports what startup is waiting on — the
+container engine, then the interface — and hands over to the main window when it is ready. Launching
+Harborlight while it is already running never starts a second copy or a second splash: the running
+window is brought to the front instead. An autostart or `--hidden` launch skips the splash entirely,
+since no window is coming.
+
 ## Everyday commands
 
 | Command                            | What it does                                                                                          |

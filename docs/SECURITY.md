@@ -79,6 +79,12 @@ Session-level policies:
 The preload script exposes exactly three functions — `invoke`, `on`, `off` — over `contextBridge`.
 It contains no business logic and no Node.js re-exports.
 
+The first-run licence gate and the splash screen run before the app and do not get that bridge. They
+load `src/preload/boot.ts`, which exposes a listener for the startup stage and a single accepted or
+declined answer — no invoke gateway, so neither window can reach a command, the Docker socket or the
+settings store. The main process only accepts that answer from the licence window's own
+`webContents`, and treats a closed window as a decline.
+
 ## The IPC allowlist
 
 Every renderer→main call goes through one gateway (`src/main/ipc/registry.ts`) that applies four

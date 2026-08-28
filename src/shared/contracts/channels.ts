@@ -10,3 +10,10 @@ export const IPC_EVENT_CHANNEL = 'harborlight:event' as const
 
 export const IPC_CHANNELS = [IPC_INVOKE_CHANNEL, IPC_EVENT_CHANNEL] as const
 export type IpcChannel = (typeof IPC_CHANNELS)[number]
+
+/**
+ * The two windows that run before the application have their own channels, in
+ * `contracts/boot.ts`. They are deliberately kept out of this module: a
+ * sandboxed preload cannot load a shared chunk, so the boot preload and the
+ * renderer preload must not import any module in common.
+ */

@@ -131,11 +131,22 @@ screen-reader user cannot find it either.
 
 ## End-to-end tests
 
-`tests/e2e/**` launches the built application with Playwright's Electron support. Two specs:
+`tests/e2e/**` launches the built application with Playwright's Electron support. Three specs:
 
 **`app.spec.ts`** — the app opens a single window with all eight sections, reports the engine as
 connected, navigates, lists and filters containers, opens the detail panel, confirms before a
 destructive action, and persists a theme change through a real `settings.get` round trip.
+
+**`startup.spec.ts`** — everything that happens before the app appears. A pristine profile is shown
+the MIT licence and nothing else; accepting records it and opens the app, declining quits without
+writing anything. A profile that has already accepted goes straight to the splash, whose bar reaches
+the end before it hands over and closes. A second launch against a running instance exits and leaves
+the one window it found, with no extra splash.
+
+The shared fixture marks its temporary profile as having accepted the licence, since the gate is a
+one-off dialog and unrelated tests should not have to click through it. Because the splash owns the
+screen first, `firstWindow()` is no longer the window a test wants; `windowFor(app, page)` picks a
+window by the file it loaded.
 
 **`security.spec.ts`** — the guarantees from [SECURITY.md](SECURITY.md), asserted against the running
 app rather than the source:

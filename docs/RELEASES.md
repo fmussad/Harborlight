@@ -8,7 +8,20 @@ and an AppImage for amd64 and arm64, plus `install.sh`, `checksums.sha256` and `
 
 ## Unreleased
 
-Nothing yet.
+### Added
+
+- First-run MIT licence agreement. Declining quits before the app touches Docker. The answer lives
+  in `license-acceptance.json` rather than in settings, so resetting settings does not ask again.
+- Splash screen on every ordinary launch, reporting real startup stages rather than an animation.
+  Skipped for autostart and `--hidden` launches, and never shown when a second launch is folded into
+  the window that is already running.
+
+### Documentation
+
+- The dock icon work in 0.1.0 stopped short of the symptom people actually hit: a `.deb` install
+  whose dock entry is blank until GNOME Shell picks up the new desktop entry. The packaging was
+  correct; what was missing was the explanation and the way out. See
+  [TROUBLESHOOTING.md](TROUBLESHOOTING.md#no-dock-icon-right-after-installing-the-deb).
 
 ## 0.1.0 — initial release
 
