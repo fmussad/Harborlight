@@ -347,8 +347,17 @@ export type ThemePreference = z.infer<typeof themeSchema>
 export const logLevelFilterSchema = z.enum(['all', 'error', 'warn', 'info', 'debug'])
 export type LogLevelFilter = z.infer<typeof logLevelFilterSchema>
 
+/**
+ * Which glyph the tray shows. The panel background is what matters here, not
+ * the application theme: Ubuntu keeps its top bar dark under both themes, so a
+ * dark glyph would be invisible there.
+ */
+export const trayIconPreferenceSchema = z.enum(['auto', 'light', 'dark'])
+export type TrayIconPreference = z.infer<typeof trayIconPreferenceSchema>
+
 export const settingsSchema = z.object({
   theme: themeSchema,
+  trayIcon: trayIconPreferenceSchema,
   dockerSocket: z.string(),
   useCustomSocket: z.boolean(),
   engineMode: z.enum(['docker', 'mock']),

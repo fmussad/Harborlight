@@ -37,6 +37,7 @@ export function createMockTransport(): Transport {
   let networks = mockNetworks()
   let settings: Settings = {
     theme: 'system',
+    trayIcon: 'auto',
     dockerSocket: 'mock://harborlight',
     useCustomSocket: false,
     engineMode: 'mock',

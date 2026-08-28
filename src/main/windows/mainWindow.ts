@@ -1,6 +1,15 @@
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { BrowserWindow, session, shell, type BrowserWindowConstructorOptions } from 'electron'
+import {
+  BrowserWindow,
+  nativeImage,
+  session,
+  shell,
+  type BrowserWindowConstructorOptions,
+  type NativeImage
+} from 'electron'
 import { isAllowedExternalUrl } from '../ipc/handlers/system'
+import { iconFile } from '../resources'
 import { events } from '../services/events'
 import { logger } from '../services/logger'
 
@@ -65,6 +74,28 @@ export function applySecurityPolicies(isDev: boolean): void {
   session.defaultSession.setPermissionCheckHandler(() => false)
 }
 
+/**
+ * Window icon with a high-resolution representation.
+ *
+ * GNOME normally draws the dock and overview icon from the desktop entry, but
+ * it falls back to the window's own icon whenever `StartupWMClass` does not
+ * match — during development, for instance. Shipping the 2x representation
+ * keeps that fallback sharp instead of upscaling a single bitmap.
+ */
+function windowIcon(): NativeImage {
+  const image = nativeImage.createFromPath(iconFile('512x512.png'))
+  if (image.isEmpty()) {
+    logger.warn('app', 'Window icon could not be read; the desktop will fall back to a default')
+    return image
+  }
+  try {
+    image.addRepresentation({ scaleFactor: 2, buffer: readFileSync(iconFile('1024x1024.png')) })
+  } catch (error) {
+    logger.debug('app', 'No 2x window icon available', error)
+  }
+  return image
+}
+
 export interface CreateWindowOptions {
   isDev: boolean
   startHidden: boolean
@@ -83,7 +114,7 @@ export function createMainWindow(options: CreateWindowOptions): BrowserWindow {
     autoHideMenuBar: true,
     backgroundColor: '#faf9f9',
     title: 'Harborlight',
-    icon: join(__dirname, '../../resources/icons/512x512.png'),
+    icon: windowIcon(),
     webPreferences: {
       preload,
       contextIsolation: true,

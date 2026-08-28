@@ -18,6 +18,7 @@ of its warnings.
 - [Rootless Docker is not detected](#rootless-docker-is-not-detected)
 - [The app does not start on Wayland](#the-app-does-not-start-on-wayland)
 - [Tray icon missing on GNOME](#tray-icon-missing-on-gnome)
+- [Tray icon is hard to see](#tray-icon-is-hard-to-see)
 - [Electron sandbox problems](#electron-sandbox-problems)
 - [Compose command unavailable](#compose-command-unavailable)
 - [Compose action fails with a path error](#compose-action-fails-with-a-path-error)
@@ -166,6 +167,19 @@ sudo apt-get install gnome-shell-extension-appindicator
 Ubuntu's default session ships this already; it is missing on vanilla GNOME sessions. Until it is
 enabled, either turn off **Settings → Desktop → Close to tray**, or restore the window by launching
 Harborlight again — the second launch focuses the existing instance instead of starting a new one.
+
+## Tray icon is hard to see
+
+**Symptom.** The icon is in the top bar but barely visible, or it does not change when you switch the
+application theme.
+
+**Cause.** The glyph has to contrast with the _panel_, which is not the same as the application
+theme. Ubuntu keeps its top bar dark under both themes, so Harborlight keeps the pale glyph there
+instead of following the theme — a dark glyph would disappear against it. On desktops whose panel
+does follow the system theme, the automatic setting tracks it.
+
+**Fix.** Force the variant in **Settings → Appearance → Tray icon**: `Pale` for a dark panel, `Dark`
+for a light one. The change applies immediately, with no restart.
 
 ## Electron sandbox problems
 

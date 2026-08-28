@@ -70,6 +70,11 @@ deb:
   # Debian's own section vocabulary; the desktop Categories live in linux.category.
   packageCategory: devel
   priority: optional
+  # electron-builder only maps the PNG set into hicolor. GNOME prefers the
+  # scalable icon and renders it crisply at any dock size or fractional scale,
+  # so the SVG master is installed alongside them.
+  fpm:
+    - resources/icons/harborlight.svg=/usr/share/icons/hicolor/scalable/apps/harborlight.svg
   compression: xz
   afterInstall: build/deb/postinst
   afterRemove: build/deb/postrm
